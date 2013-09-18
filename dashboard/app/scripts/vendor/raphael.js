@@ -2927,16 +2927,16 @@ define(['eve'], function (eve) {
                         set[attr] = now;
                     }
                     that.attr(set);
-                    (function (id, that, anim) {
-                        setTimeout(function () {
-                            eve("raphael.anim.frame." + id, that, anim);
-                        });
-                    })(that.id, that, e.anim);
+//                    (function (id, that, anim) {
+//                        setTimeout(function () {
+//                            eve("raphael.anim.frame." + id, that, anim);
+//                        });
+//                    })(that.id, that, e.anim);
                 } else {
                     (function(f, el, a) {
                         setTimeout(function() {
-                            eve("raphael.anim.frame." + el.id, el, a);
-                            eve("raphael.anim.finish." + el.id, el, a);
+//                            eve("raphael.anim.frame." + el.id, el, a);
+//                            eve("raphael.anim.finish." + el.id, el, a);
                             R.is(f, "function") && f.call(el);
                         });
                     })(e.callback, that, e.anim);
