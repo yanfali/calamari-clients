@@ -196,7 +196,7 @@ define(['jquery', 'underscore', 'backbone', 'helpers/raphael_support', 'template
                 });
                 views.text.remove();
                 if (views.pcircle) {
-                    views.pcircle.stop().remove();
+                    views.pcircle.stop().hide();
                 }
                 model.views = null;
             }
@@ -240,7 +240,7 @@ define(['jquery', 'underscore', 'backbone', 'helpers/raphael_support', 'template
             var pos = Rs.calcPosition(index, this.originX, this.originY, this.width, this.height, this.step);
             this.animateCircleTraversal(start.x, start.y, 8, pos.nx, pos.ny, model);
         },
-        calculatePositions: function(filterFn) {
+        renderOSDViews: function(filterFn) {
             var coll = this.collection.models;
             if (filterFn) {
                 coll = _.filter(coll, filterFn);
@@ -403,13 +403,14 @@ define(['jquery', 'underscore', 'backbone', 'helpers/raphael_support', 'template
             this.drawGrid(d);
             var p = d.promise();
             var vent = this.App.vent;
-            p.then(this.calculatePositions).then(function() {
+            p.then(this.renderOSDViews).then(function() {
                 vent.trigger('viz:render');
             });
             return p;
         },
         keyHandler: function(evt) {
             evt.preventDefault();
+            evt.stopPropagation();
             if (!evt.keyCode) {
                 return;
             }
@@ -450,14 +451,16 @@ define(['jquery', 'underscore', 'backbone', 'helpers/raphael_support', 'template
         pulseAnimation: Raphael.animation({
             r: 30,
             'stroke-opacity': 0,
-        }, 1000, 'linear'),
+        }, 1000, 'linear').repeat('Infinity'),
         addPulse: function(attrs, id) {
             var circle = this.paper.circle(attrs.cx, attrs.cy, attrs.r + 1).attr({
                 'stroke': '#000'
-            }).data('modelid', id).animate(this.pulseAnimation.repeat('Infinity'));
+            }).data('modelid', id).animate(this.pulseAnimation);
             return circle;
         },
-        unhoverHandler: function() {
+        unhoverHandler: function(evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
             if (this.pulseTimer === null) {
                 // install a remove hover timer if none exists
                 this.pulseTimer = setTimeout(this.removePulse, 1500);
@@ -549,7 +552,7 @@ define(['jquery', 'underscore', 'backbone', 'helpers/raphael_support', 'template
                 previousModels: this.collection.models
             });
             var vent = this.App.vent;
-            return this.calculatePositions(function(m) {
+            return this.renderOSDViews(function(m) {
                 return _.find(enabled, function(obj) {
                     if (_.isFunction(obj.get('match'))) {
                         var t = obj.get('match')(m);
@@ -568,30 +571,60 @@ define(['jquery', 'underscore', 'backbone', 'helpers/raphael_support', 'template
                 pulse: true,
                 visible: true
             });
-            this.collection.filter(function(value) {
+            var models = this.collection.filter(function(value) {
                 var views = value.views;
                 if (!views) {
                     return;
                 }
                 if (views.pcircle) {
-                    views.pcircle.stop().remove();
+                    views.pcircle.stop().hide();
                     views.pcircle = null;
                 }
                 return _.find(pulsed, function(obj) {
                     if (_.isFunction(obj.get('match'))) {
                         var t = obj.get('match')(value);
-                        if (t) {
-                            if (views.circle) {
-                                var attrs = views.circle.attrs;
-                                views.pcircle = this.paper.circle(attrs.cx, attrs.cy, attrs.r + 1).attr({
-                                    'stroke': '#000'
-                                }).animate(this.pulseAnimation.repeat('Infinity'));
-                            }
-                        }
                         return t;
                     }
                     return false;
                 }, this);
+            }, this);
+            var apcircle = this.paper.circle(0, 0, 1);
+            console.log(models.length);
+            if (models.length === 0) {
+                return;
+            }
+            var first = _.first(models);
+            var fviews = first.views;
+            if (fviews.circle) {
+                var attrs = fviews.circle.attrs;
+                if (!fviews.pcircle) {
+                    fviews.pcircle = apcircle.clone();
+                } else {
+                    fviews.pcircle.show();
+                }
+                fviews.pcircle.attr({
+                    cx: attrs.cx,
+                    cy: attrs.cy,
+                    r: attrs.r,
+                    'stroke': '#000'
+                }).animate(this.pulseAnimation);
+            }
+            _.each(_.rest(models, 1), function(model) {
+                var views = model.views;
+                if (views.circle) {
+                    var attrs = views.circle.attrs;
+                    if (!views.pcircle) {
+                        views.pcircle = apcircle.clone();
+                    } else {
+                        views.pcircle.show();
+                    }
+                    views.pcircle.attr({
+                        cx: attrs.cx,
+                        cy: attrs.cy,
+                        r: attrs.r,
+                        'stroke': '#000'
+                    }).animateWith(fviews.pcircle, this.pulseAnimation, this.pulseAnimation);
+                }
             }, this);
         },
         reset: function() {
@@ -599,7 +632,7 @@ define(['jquery', 'underscore', 'backbone', 'helpers/raphael_support', 'template
                 previousModels: this.collection.models
             });
             var vent = this.App.vent;
-            return this.calculatePositions().then(function() {
+            return this.renderOSDViews().then(function() {
                 vent.trigger('viz:render');
             });
         }
