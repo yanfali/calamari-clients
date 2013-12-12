@@ -77,6 +77,9 @@ define([
                     interactionModel: {}
                 });
                 var iops = _.last(d.data)[1];
+                if (iops === null) {
+                    iops = 0;
+                }
                 headline.text(iops);
             });
         }
