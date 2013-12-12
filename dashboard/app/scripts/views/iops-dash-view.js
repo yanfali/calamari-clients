@@ -6,9 +6,10 @@ define([
         'backbone',
         'templates',
         'dygraphs',
+        'helpers/graph-utils',
         'helpers/gauge-helper',
         'marionette'
-], function($, _, Backbone, JST, Dygraph, gaugeHelper) {
+], function($, _, Backbone, JST, Dygraph, gutils, gaugeHelper) {
     'use strict';
 
     var IopsDashView = Backbone.Marionette.ItemView.extend({
@@ -22,8 +23,20 @@ define([
             this.Dygraph = Dygraph;
             _.bindAll(this, 'postRender');
             this.App = Backbone.Marionette.getOption(this, 'App');
-            this.listenToOnce(this, 'render', this.postRender);
+
             gaugeHelper(this);
+            this.graphiteHost = Backbone.Marionette.getOption(this, 'graphiteHost');
+            this.baseUrl = gutils.makeBaseUrl(this.graphiteHost);
+            var metrics = ['num_read', 'num_write'];
+            var targets = gutils.makePoolIOPSTargets(metrics);
+            var targetParam = gutils.makeTargets(gutils.sumSeries(targets));
+            fns = [
+                gutils.makeParam('format', 'json-array'),
+                gutils.makeParam('from', '-1d'),
+                targetParam
+            ];
+            console.log(gutils);
+            this.listenToOnce(this, 'render', this.postRender);
         },
         data: [
             [1, 10, 120],

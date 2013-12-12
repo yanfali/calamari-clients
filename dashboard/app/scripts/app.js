@@ -146,6 +146,7 @@ require(['jquery', 'underscore', 'backbone', 'humanize', 'views/application-view
         iopsLayout.render();
 
         var iopsView = new views.IopsView({
+            'graphiteHost': config['graphite-host'],
             App: App
         });
         iopsLayout.a.show(iopsView);
@@ -260,7 +261,8 @@ require(['jquery', 'underscore', 'backbone', 'humanize', 'views/application-view
                 commit: gitcommit['git-commit'],
                 views: views,
                 PoolsView: poolsView,
-                IopsView: iopsView
+                IopsView: iopsView,
+                HostsView: hostsView
             };
         });
         /* Defer Visualization startup to after loading the cluster metadata */
