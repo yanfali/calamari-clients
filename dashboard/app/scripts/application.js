@@ -99,7 +99,7 @@ define(['jquery', 'underscore', 'backbone', 'helpers/animation', 'statemachine',
             var self = this;
             if (host === 'all') {
                 this.graphWall.hideButtons();
-                this.graphWall.renderGraphs('CPU Load for Cluster', this.graphWall.makeHostUrls('makeCPUGraphUrl'));
+                this.graphWall.renderGraphs('Cluster', this.graphWall.makeClusterWideMetrics);
             } else if (host === 'iops') {
                 this.graphWall.hideButtons();
                 this.graphWall.makePoolIOPS.call(this.graphWall).then(function(result) {
