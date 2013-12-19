@@ -100,7 +100,7 @@ define(['jquery', 'underscore', 'backbone', 'helpers/animation', 'statemachine',
             if (host === 'all') {
                 this.graphWall.hideButtons();
                 this.graphWall.makeClusterWideMetrics.call(this.graphWall).then(function(result) {
-                    this.graphWall.renderGraphs('Cluster', function() {
+                    self.graphWall.renderGraphs('Cluster', function() {
                         return _.flatten(result);
                     });
                 });
