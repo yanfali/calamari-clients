@@ -419,7 +419,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 fetchMetrics: function() {
                     var d = $.Deferred();
                     d.resolve();
-                    return d;
+                    return d.promise();
                 }
 
             };
