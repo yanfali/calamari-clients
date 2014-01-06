@@ -57,3 +57,8 @@ $itapp-switch-slider-fail-state-secondary-on-color: #8C0000;
 $itapp-switch-slider-fail-state-primary-off-color: darken($itapp-switch-slider-fail-state-primary-on-color, 10%);
 $itapp-switch-slider-fail-state-secondary-off-color: darken($itapp-switch-slider-fail-state-secondary-on-color, 10%);
 $itapp-switch-slider-fail-text-color: #fff;
+
+// Graph Colors
+$itapp-graph-font-color: $itlightgray;
+$itapp-bg-color: #000;
+$itapp-border-color: lighten($itgray, 25%);
