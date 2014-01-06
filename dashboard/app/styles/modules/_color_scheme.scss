@@ -1,0 +1,36 @@
+// Standard Font for page
+$itapp-font-family: 'ApexSansMedium';
+$itapp-font-alt-family: 'ApexSansLight';
+$itapp-standard-font-color: $itdarkgray;
+$itapp-subtext-font-color: $itgray;
+
+// Dashboard background Color
+$itapp-background-color: $itdarkgray;
+
+// Foreground Card colors
+$itapp-card-color: $itlightgray;
+$itapp-card-box-shadow-color: #5e6a71;
+$itapp-card-title-color: $itdarkgray;
+
+// Navbar Gradient Colors
+$itapp-navbar-top-color: darken($itdarkred, 20%);
+$itapp-navbar-bottom-color: darken($itred, 40%);
+$itapp-navbar-border-color: darken($itdarkred, 15%);
+
+// Navbar Dropdown Colors
+$itapp-navbar-menu-text-color: $itlightgray;
+$itapp-navbar-menu-shadow-color: $itgray;
+$itapp-navbar-menu-hover-color: darken($itlightgray, 15%);
+$itapp-navbar-menu-dropdown-background-color: $itlightgray;
+
+// standard colors
+$itapp-warn-color: orange;
+$itapp-alert-color: red;
+$itapp-ok-color: green;
+
+// Application State Buttons
+$itapp-state-primary-gradient-color: lighten($itgray, 30%);
+$itapp-state-primary-alt-gradient-color: $itlightgray;
+$itapp-state-secondary-gradient-color: $itdarkgray;
+$itapp-state-icon-color: $itlightgray;
+

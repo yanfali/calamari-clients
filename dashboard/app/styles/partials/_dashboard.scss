@@ -1,11 +1,4 @@
-$itapp-background-color: $itdarkgray;
-$itapp-card-color: $itlightgray;
-$itapp-font-family: 'ApexSansMedium';
-$itapp-standard-font-color: $itdarkgray;
 $itapp-card-border-radius: 1px;
-$itapp-card-box-shadow-color: #5e6a71;
-$itapp-subtext-font-color: $itgray;
-$itapp-card-title-font-color: $itdarkred;
 
 body {
     background-color: $itapp-background-color;
@@ -20,25 +13,25 @@ $third-row-height: 120px;
 .navbar {
     margin-bottom:0;
     min-height: 58px;
-    @include background(linear-gradient(to bottom, darken($itdarkred, 20%), darken($itred, 40%)));
+    @include background(linear-gradient(to bottom, $itapp-navbar-top-color, $itapp-navbar-bottom-color));
     @include border-radius(3px);
     @include box-shadow(0 2px 4px rgba(0, 0, 0, .2));
-    border: 1px solid darken($itdarkred, 15%);
+    border: 1px solid $itapp-navbar-border-color;
     width: 100%;
 }
 
 .navbar .navbar-nav > li > a {
-	text-shadow: 0 1px 0 $itgray;
-	color: $itlightgray;
-        @include background(linear-gradient(to bottom, darken($itdarkred, 20%), darken($itred, 40%)));
+	text-shadow: 0 1px 0 $itapp-navbar-menu-shadow-color;
+	color: $itapp-navbar-menu-text-color;
+    @include background(linear-gradient(to bottom, $itapp-navbar-top-color, $itapp-navbar-bottom-color));
 	&:hover {
-		color: darken($itlightgray, 15%);
+		color: $itapp-navbar-menu-hover-color;
 	}
 	&:active {
 	}
 }
 .dropdown-menu {
-	background-color: $itlightgray;
+	background-color: $itapp-navbar-menu-dropdown-background-color;
     span {
         display: inline-block;
         width: 20px;
@@ -61,7 +54,7 @@ $third-row-height: 120px;
 	min-width: 200px;
     }
     h1, h2, h3, h4, h5, h6 {
-        font-family: ApexSansMedium;
+        font-family: $itapp-font-family;
     }
 }
 
@@ -93,9 +86,9 @@ hr.style-two {
     background: #ccc;
 }
 .card-title {
-    color: $itdarkgray;
+    color: $itapp-card-title-color;
     text-transform: uppercase;
-    font-family: ApexSansLight;
+    font-family: $itapp-font-alt-family;
     font-size: 1.5em;
 }
 table.metrics tr td:first-child {
@@ -117,42 +110,7 @@ table.metric td:last-child {
 	text-align: right;
 }
 .table tbody td {
-	font-family: ApexSansLight;
-}
-span.infotext {
-    font-size: 25px;
-    text-align: center;
-    display: inline-block;
-    margin: 10px auto auto 50px;
-}
-span.infotext-2 {
-    position: absolute;
-    right: 26px;
-    bottom: 70px;
-    display: inline-block;
-    margin: 10px auto auto 4px;
-    color: $itapp-subtext-font-color;
-}
-span.health-text {
-    font-size: 45px;
-    width: $hr-width;
-    text-align: center;
-    display: block;
-    margin: 40px auto 0px auto;
-}
-span.mon-text {
-    text-align: center;
-    width: $hr-width;
-    display: inline-block;
-    margin: 5px auto auto auto;
-    color: $itgray;
-}
-span.mon-text-2 {
-    text-align: right;
-    width: $hr-width;
-    display: inline-block;
-    margin: 10px auto auto 15px;
-    color: #aaa;
+	font-family: $itapp-font-alt-family;
 }
 .icon-target {
 	padding: 2px;
@@ -161,14 +119,14 @@ span.mon-text-2 {
     border-top: 0px;
 }
 @mixin textalert($color) {
-       color: $color;
-       opacity: 0.95;
+    color: $color;
+    opacity: 0.95;
 }
 .mon-state {
     margin-top: 20px;
 }
 .pg-state {
-  margin-top: 40px;
+    margin-top: 40px;
 }
 .pg-count {
 }
@@ -181,13 +139,13 @@ span.mon-text-2 {
   text-transform: capitalize;
 }
 .warn {
-       @include textalert(orange);
+       @include textalert($itapp-warn-color);
 }
 .fail {
-       @include textalert(red);
+       @include textalert($itapp-alert-color);
 }
 .ok {
-       @include textalert(green);
+       @include textalert($itapp-ok-color);
 }
 .notifications {
     min-height: $third-row-height;
@@ -202,7 +160,7 @@ $bc-line-width: 40;
 $bc-width: $bc-height;
 $bc-margin: 4;
 .nav.navbar {
-    border-bottom: 1px solid $itgray;
+    border-bottom: 1px solid $itapp-navbar-menu-shadow-color;
 }
 .inknav {
     @include user-select(none);	
@@ -225,13 +183,13 @@ $bc-margin: 4;
     text-overflow: hidden;
     overflow: hidden;
     @include border-radius(100%);
-    @include background(linear-gradient(top left, lighten($itgray, 30%), $itdarkgray));
+    @include background(linear-gradient(top left, $itapp-state-primary-gradient-color, $itapp-state-secondary-gradient-color));
     line-height: 1.9;
-    color: $itlightgray;
+    color: $itapp-state-icon-color;
     cursor: pointer;
 }
 .bc-entry:hover {
-    @include background(linear-gradient(top left, $itdarkgray, lighten($itgray, 30%)));
+    @include background(linear-gradient(top left, $itapp-state-secondary-gradient-color, $itapp-state-primary-gradient-color));
 }
 .bc-entry:active {
     @include background(linear-gradient(top left, $itdarkgray, $itlightgray));
