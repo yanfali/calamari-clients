@@ -1,8 +1,8 @@
 .card {
     .card-title {
-        color: $itdarkgray;
+        color: $itapp-card-title-color;
         text-transform: uppercase;
-        font-family: ApexSansLight;
+        font-family: $itapp-font-alt-family;
         font-size: 1.5em;
     }
     .card-icon {
@@ -25,15 +25,15 @@
     .subline {
         font-size: 1.5em;
         text-align: center;
-        color: $itgray;
-        font-family: ApexSansLight;
+        color: $itapp-subtext-font-color;
+        font-family: $itapp-font-alt-family;
 		margin-top: 10px;
     }
     .subtext {
         position: absolute;
         display: inline-block;
         font-size: 1em;
-        color: $itgray;
+        color: $itapp-subtext-font-color;
         bottom: 10px;
         width: 100%;
         text-align: center;
@@ -52,36 +52,21 @@
         position: absolute;
         width: 100%;
         text-align: center;
-	font-family: 'ApexSansLight';
+	    font-family: $itapp-font-alt-family;
     }
     .totalcap {
         position: absolute;
         bottom: 23%;
         right: 15%;
-	font-family: 'ApexSansLight';
+	    font-family: $itapp-font-alt-family;
     }
     .pgcanvas {
       height: 100%;
       width: 66%;
-      background-color: $itlightgray;
+      background-color: $itapp-card-color;
       min-height: #{$itapp-card-height - 20}px;
 	  margin-top: -5px;
       padding: 0;
-    }
-    .pgstats {
-	  min-height: #{$itapp-card-height - 18}px;
-      padding: 0;
-      .headline {
-        font-size: 2.5em;
-      }
-      .subtext {
-        position: absolute;
-        display: inline-block;
-        font-size: 1em;
-        color: $itgray;
-        bottom: 8px;
-        right: 0;
-      }
     }
 	.iopscanvas {
 	  max-height: 100px;

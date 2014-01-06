@@ -91,52 +91,9 @@ hr.style-two {
     font-family: $itapp-font-alt-family;
     font-size: 1.5em;
 }
-table.metrics tr td:first-child {
-    text-align: right;
-    color: $itapp-subtext-font-color;
-}
-.table.metrics td, .table.metrics th {
-    line-height: 1em;
-}
-table.metrics td {
-    width: auto;
-}
-table.metric td:last-child {
-}
-.table th, .table td {
-    padding: 4px;
-}
-.table tbody td, .table thead th {
-	text-align: right;
-}
-.table tbody td {
-	font-family: $itapp-font-alt-family;
-}
-.icon-target {
-	padding: 2px;
-}
-.table tr:first-child > th, .table tr:first-child > td {
-    border-top: 0px;
-}
 @mixin textalert($color) {
     color: $color;
     opacity: 0.95;
-}
-.mon-state {
-    margin-top: 20px;
-}
-.pg-state {
-    margin-top: 40px;
-}
-.pg-count {
-}
-.pg-count-top {
-  display: inline-block;
-  margin-bottom: 5px;
-}
-.pg-count-bottom {
-  font-size: 0.8em;
-  text-transform: capitalize;
 }
 .warn {
        @include textalert($itapp-warn-color);
@@ -196,19 +153,19 @@ $bc-margin: 4;
 }
 .bc-line {
     height: 30px;
-    border-top: 2px solid $itgray;
+    border-top: 2px solid $itapp-state-line-color;
     display: inline-block;
     margin: 0;
     padding: 0;
     width: #{$bc-line-width}px;
 }
 .bc-active {
-    color: $itdarkgray;
-    background: $itlightgray;
+    color: $itapp-state-active-color;
+    background: $itapp-state-bg-color;
     cursor: default;
 }
 .bc-active:hover {
-    background: $itlightgray;
+    background: $itapp-state-bg-color;
 }
 .bc-circle {
     text-align: center;
@@ -219,13 +176,13 @@ $bc-margin: 4;
     text-overflow: hidden;
     overflow: hidden;
     @include border-radius(100%);
-    border: 2px solid $itgray;
+    border: 2px solid $itapp-state-line-color;
     margin: 0px auto;
     padding: 0px;
     cursor: pointer;
 }
 .bc-title {
-    color: $itlightgray;
+    color: $itapp-state-title-color;
     font-size: 8px;
     margin-top: 0;
 }

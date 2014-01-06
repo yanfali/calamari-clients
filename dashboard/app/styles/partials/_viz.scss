@@ -15,10 +15,10 @@
 }
 .raphael-one {
     position: relative;
-    background-color: $itlightgray;
+    background-color: $itapp-card-color;
     height: 600px;
     &.viz-hidden {
-	max-height: 0;
+        max-height: 0;
         visibility: hidden;
     }
 }
@@ -41,7 +41,7 @@ tspan:hover, circle:hover {
 .detail td.value {
     @include force-wrap();
     max-width: 10em;
-    font-family:'Andale Mono';
+    font-family: $itapp-fixed-font-family;
     padding: 5px 0 12px 10px;
 }
 $left-adjust: -5px;
@@ -62,7 +62,7 @@ ul.filter {
     min-width: 11em;
     padding: 0;
     >div {
-	border-bottom: 1px solid rgba(0,0,0,0.2);	
+	border-bottom: 1px solid $itapp-transparent-color;	
         >label {
           display: inline-block;
 	  line-height: 0.6;
@@ -85,7 +85,7 @@ ul.filter {
     }
 }
 .workbench-mode {
-    background-color: $itlightgray;
+    background-color: $itapp-card-color;
 }
 .workbench {
     margin-top: 5px;
@@ -101,11 +101,11 @@ $popover-width: 200;
     position: absolute;
 }
 .detail-popover {
-    @include box-shadow(0 2px 4px rgba(0, 0, 0, .2));
+    @include box-shadow(0 2px 4px $itapp-transparent-color);
     @include border-radius(0);
     opacity: 1.0;
     padding: 5px;
-    background-color: rgba(255,255,255,0.7);
+    background-color: $itapp-light-transparent-color;
     position: absolute;
     height: #{$popover-height - 20}px;
     width: #{$popover-width - 30}px;
@@ -115,21 +115,21 @@ $popover-width: 200;
         cursor: pointer;
     }
     .fa-info-circle {
-	position: absolute;
-	right: 5px;
-	bottom: 5px;
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
         cursor: help;
     }
     .fa-cloud {
-	position: absolute;
-	right: 25px;
-	bottom: 5px;
+        position: absolute;
+        right: 25px;
+        bottom: 5px;
         cursor: help;
     }
     button.graph-button {
-	    position: absolute;
-	    bottom: 5px;
-	    left: 5px;
+        position: absolute;
+        bottom: 5px;
+        left: 5px;
     }
 }
 $detail-left-pos: 200px;
@@ -154,21 +154,21 @@ span.filter-opt-disable {
     opacity: 0.4;
 }
 .filter .has-switch span.switch-primary {
-    @include background-image(linear-gradient(top, #26BF00, #1C8C00));
+    @include background-image(linear-gradient(top, $itapp-switch-slider-ok-state-primary-on-color, $itapp-switch-slider-ok-state-secondary-on-color));
 }
 .filter .has-switch span.switch-right.switch-info {
-    @include background-image(linear-gradient(top, darken(#26BF00, 10%), darken(#1C8C00, 10%)));
+    @include background-image(linear-gradient(top, $itapp-switch-slider-ok-state-primary-off-color, $itapp-switch-slider-ok-state-secondary-off-color));
 }
 .filter .has-switch span.switch-success {
-    @include background-image(linear-gradient(top, #BBBF00, #898C00));
+    @include background-image(linear-gradient(top, $itapp-switch-slider-warn-state-primary-on-color, $itapp-switch-slider-warn-state-secondary-on-color));
 }
 .filter .has-switch span.switch-right.switch-warning {
-    @include background-image(linear-gradient(top, darken(#BBBF00, 10%), darken(#898C00, 10%)));
+    @include background-image(linear-gradient(top, $itapp-switch-slider-warn-state-primary-off-color, $itapp-switch-slider-warn-state-secondary-off-color));
 }
 .filter .has-switch span.switch-danger {
-    @include background-image(linear-gradient(top, #BF0000, #8C0000));
+    @include background-image(linear-gradient(top, $itapp-switch-slider-fail-state-primary-on-color, $itapp-switch-slider-fail-state-secondary-on-color));
 }
 .filter .has-switch span.switch-right {
-    color: #fff;
-    @include background-image(linear-gradient(top, darken(#BF0000, 10%), darken(#8C0000, 10%)));
+    color: $itapp-switch-slider-fail-text-color;
+    @include background-image(linear-gradient(top, $itapp-switch-slider-fail-state-primary-off-color, $itapp-switch-slider-fail-state-secondary-off-color));
 }

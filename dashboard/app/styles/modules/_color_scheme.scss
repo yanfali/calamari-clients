@@ -1,11 +1,14 @@
 // Standard Font for page
 $itapp-font-family: 'ApexSansMedium';
 $itapp-font-alt-family: 'ApexSansLight';
+$itapp-fixed-font-family: 'Andale Mono';
 $itapp-standard-font-color: $itdarkgray;
 $itapp-subtext-font-color: $itgray;
 
 // Dashboard background Color
 $itapp-background-color: $itdarkgray;
+$itapp-transparent-color: rgba(0, 0, 0, .2);
+$itapp-light-transparent-color: rgba(255, 255, 255, .7);
 
 // Foreground Card colors
 $itapp-card-color: $itlightgray;
@@ -33,4 +36,24 @@ $itapp-state-primary-gradient-color: lighten($itgray, 30%);
 $itapp-state-primary-alt-gradient-color: $itlightgray;
 $itapp-state-secondary-gradient-color: $itdarkgray;
 $itapp-state-icon-color: $itlightgray;
+$itapp-state-line-color: $itgray;
+$itapp-state-active-color: $itdarkgray;
+$itapp-state-bg-color: $itlightgray;
+$itapp-state-title-color: $itlightgray;
 
+// Visualization - slider switche colors
+$itapp-switch-slider-ok-state-primary-on-color: #26BF00;
+$itapp-switch-slider-ok-state-secondary-on-color: #1CBC00;
+$itapp-switch-slider-ok-state-primary-off-color: darken($itapp-switch-slider-ok-state-primary-on-color, 10%);
+$itapp-switch-slider-ok-state-secondary-off-color: darken($itapp-switch-slider-ok-state-secondary-on-color, 10%);
+
+$itapp-switch-slider-warn-state-primary-on-color: #BBBF00;
+$itapp-switch-slider-warn-state-secondary-on-color: #898C00;
+$itapp-switch-slider-warn-state-primary-off-color: darken($itapp-switch-slider-warn-state-primary-on-color, 10%);
+$itapp-switch-slider-warn-state-secondary-off-color: darken($itapp-switch-slider-warn-state-secondary-on-color, 10%);
+
+$itapp-switch-slider-fail-state-primary-on-color: #BF0000;
+$itapp-switch-slider-fail-state-secondary-on-color: #8C0000;
+$itapp-switch-slider-fail-state-primary-off-color: darken($itapp-switch-slider-fail-state-primary-on-color, 10%);
+$itapp-switch-slider-fail-state-secondary-off-color: darken($itapp-switch-slider-fail-state-secondary-on-color, 10%);
+$itapp-switch-slider-fail-text-color: #fff;
