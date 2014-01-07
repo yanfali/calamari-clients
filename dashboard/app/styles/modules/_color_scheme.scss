@@ -1,3 +1,7 @@
+// App Logo location and position
+$itapp-logo-url: '../images/logo.png';
+$itapp-logo-margin: 10px 0 0 12px;
+
 // Standard Font for page
 $itapp-font-family: 'ApexSansMedium';
 $itapp-font-alt-family: 'ApexSansLight';
@@ -62,3 +66,4 @@ $itapp-switch-slider-fail-text-color: #fff;
 $itapp-graph-font-color: $itlightgray;
 $itapp-bg-color: #000;
 $itapp-border-color: lighten($itgray, 25%);
+

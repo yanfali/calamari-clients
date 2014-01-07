@@ -5,6 +5,13 @@ body {
     font-family: $itapp-font-family;
     font-style: normal;
 }
+.app-logo {
+	display: block;
+	width: 115px;
+	height: 25px;
+	background: url($itapp-logo-url) no-repeat center;
+	margin: $itapp-logo-margin;
+}
 
 $itapp-card-height: 200;
 $second-row-height: 600px;
