@@ -10,14 +10,6 @@
            background-color: $itlightgray;
     }
 }
-@include keyframes(toDashboard) {
-    0% {
-	    opacity: 1;
-    }
-    100% {
-	    opacity: 0;
-    }
-}
 .toWorkBench {
 	-webkit-animation-name: toWorkBench;
 	animation-name: toWorkBench;
@@ -27,6 +19,14 @@
 .toWorkBench-enter {
     -webkit-animation-duration: $timeFast;
     animation-duration: $timeFast;
+}
+@include keyframes(toDashboard) {
+    0% {
+	    opacity: 1;
+    }
+    100% {
+	    opacity: 0;
+    }
 }
 .toDashboard {
 	-webkit-animation-name: toDashboard;
@@ -39,6 +39,10 @@
     animation-duration: $timeFast;
 }
 .fadeOutUp-enter {
+    -webkit-animation-duration: $timeFast;
+    animation-duration: $timeFast;
+}
+.fadeInDown-enter {
     -webkit-animation-duration: $timeFast;
     animation-duration: $timeFast;
 }
