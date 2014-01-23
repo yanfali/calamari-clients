@@ -1,3 +1,4 @@
+/*
 @import 'animate';
 @include animate-fadeIn($class: true);
 @include animate-fadeInDown($class: true);
@@ -7,6 +8,22 @@
 @include animate-fadeOutLeft($class: true);
 @include animate-fadeOutRight($class: true);
 @include animate-fadeOutUp($class: true);
+*/
+// keyframes mixin
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content; 
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  } 
+}
 @import '_dashboard_animation.scss';
 @import '_viz_animation.scss';
 

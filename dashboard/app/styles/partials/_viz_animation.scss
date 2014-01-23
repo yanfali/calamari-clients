@@ -1,5 +1,13 @@
 $shortTimer: 0.25s;
 $medTimer: 0.25s;
+$itapp-viz-text-color: $itdarkgray;
+$itapp-viz-vertical-slide-distance:  220;
+text {
+    font: 9px ApexSansMedium;
+    stroke: none;
+    fill: $itapp-viz-text-color;
+}
+/*
 .fadeInDownAnim {
   @include animation(fadeInDown $shortTimer ease);
 }
@@ -13,13 +21,6 @@ $medTimer: 0.25s;
 
 .fadeOutAnim {
   @include animation(fadeOut $shortTimer ease);
-}
-$itapp-viz-text-color: $itdarkgray;
-$itapp-viz-vertical-slide-distance:  220;
-text {
-    font: 9px ApexSansMedium;
-    stroke: none;
-    fill: $itapp-viz-text-color;
 }
 @include keyframes(move-up-viz) {
     100% {
@@ -83,21 +84,6 @@ text {
 .slideVizLeftAnim {
     @include animation(slideVizLeft $medTimer ease);
 }
-@include keyframes(growDialog) {
-    0% {
-	    opacity: 0;
-	    left: -#{$popover-width}px;
-    }
-    30% { 
-	    opacity: 1;
-    }
-    100% {
-	    left: 0;
-    }
-}
-.DialogInAnim {
-    @include animation(growDialog 0.25s ease-in-out);
-}
 @include keyframes(switcherSliderDown) {
     0% {
     }
@@ -115,4 +101,20 @@ text {
 }
 .sliderUpAnim {
     @include animation(switcherSliderUp $shortTimer ease-out);
+}
+*/
+@include keyframes(growDialog) {
+    0% {
+	    opacity: 0;
+	    left: -#{$popover-width}px;
+    }
+    30% { 
+	    opacity: 1;
+    }
+    100% {
+	    left: 0;
+    }
+}
+.DialogInAnim {
+    @include animation(growDialog 0.25s ease-in-out);
 }
