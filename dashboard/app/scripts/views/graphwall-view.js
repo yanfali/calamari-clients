@@ -29,67 +29,6 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
         rangeLabel: [
             l10n.getSync('GraphLabelWeek'), l10n.getSync('GraphLabel3Days'), l10n.getSync('GraphLabel24Hours'), l10n.getSync('GraphLabel12Hours'), l10n.getSync('GraphLabelHour')
         ],
-        debouncedChangedGraph: function($parent, url, opts) {
-            this.dygraphLoader($parent, url, opts);
-        },
-        changeGraphRange: function(evt) {
-            evt.preventDefault();
-            evt.stopPropagation();
-            var $target = $(evt.target);
-            var $parent = $target.closest('.graph-card');
-            var $workarea = $parent.find('.workarea_g');
-            var url = $workarea.data('url');
-            var value = $target.val();
-            var opts = _.extend($workarea.data('opts'), {
-                xlabel: this.rangeLabel[value]
-            });
-            $parent.find('.graph-value').text(this.rangeText[value]);
-            var index = url.indexOf('&from');
-            if (index !== -1) {
-                url = url.slice(0, index);
-            }
-            this.debouncedChangedGraph($parent, url + '&from=' + this.rangeQuery[value], opts);
-        },
-        hostChangeHandler: function(evt) {
-            var target = evt.target;
-            var $el = $(target.options[target.selectedIndex]);
-            var host = $el.attr('value');
-            if (target.selectedIndex < 2 || this.currentGraph === '') {
-                this.currentGraph = '';
-            } else {
-                host += '/' + this.currentGraph;
-            }
-            this.AppRouter.navigate('graph/' + host, {
-                trigger: true
-            });
-        },
-        clickHandler: function(evt) {
-            var $target = $(evt.target);
-            var id = $target.attr('data-id');
-            var route = 'graph/' + this.hostname + '/' + id;
-            this.currentGraph = id;
-            if (id === 'overview') {
-                route = 'graph/' + this.hostname;
-                this.currentGraph = '';
-            }
-            this.AppRouter.navigate(route, {
-                trigger: true
-            });
-        },
-        onItemBeforeClose: function() {
-            this.$('.workarea_g').each(function(index, graph) {
-                /* clean up cached dygraph instances before closing view */
-                var $graph = $(graph);
-                var dynagraph = $graph.data('graph');
-                // jshint camelcase: false
-                if (dynagraph && dynagraph.maindiv_ !== null) {
-                    dynagraph.destroy();
-                }
-                $graph.data('graph', undefined);
-                $graph.data('url', undefined);
-                $graph.data('opts', undefined);
-            });
-        },
         graphTitleTemplates: {},
         graphOptions: {},
         graphs: [{
@@ -273,35 +212,31 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 }
             }
         ],
-        poolIopsGraphTitleTemplate: function(fn) {
-            // wrap Pool Iops Title Template so we can add proper name
-            var self = this;
-            return function(opts) {
-                var pools = self.App.ReqRes.request('get:pools');
-                pools.all = 'Aggregate';
-                if (opts.id) {
-                    opts.id = pools[opts.id];
+        selectTemplate: _.template('<select class="form-control" name="hosts"><option value="all" selected><%- Cluster %></option><option value="iops"><%- PoolIOPS %></option><%= list %></select>'),
+        optionTemplate: _.template('<option value="<%- args.host %>">Host - <%- args.host %></option>"', null, {
+            variable: 'args'
+        }),
+        selectors: [],
+        dygraphDefaultOptions: {
+            labelsKMG2: false,
+            labelsKMB: false,
+            stackedGraph: false,
+            fillGraph: false,
+            stepPlot: false,
+            xlabel: 'Time (Last 24 hours)',
+            connectSeparatedPoints: true,
+            colors: ['#8fc97f', '#beaed4', '#fdc086', '#386cb0', '#f0027f', '#bf5b17', '#666666'],
+            labelsSeparateLines: true,
+            legend: 'always',
+            axes: {
+                x: {
+                    valueFormatter: function(ms) {
+                        return new Date(ms).strftime('%Y-%m-%d @ %H:%M%Z');
+                    }
                 }
-                return fn(opts);
-            };
+            }
         },
-        makeGraphFunctions: function(options) {
-            var targets = gutils.makeTargets(gutils[options.util](options.metrics));
-            var fns = [
-                gutils.makeParam('format', 'json-array'),
-                targets
-            ];
-            this[options.fn] = gutils.makeGraphURL(this.baseUrl, fns);
-            this.graphTitleTemplates[options.fn] = function() {
-                var args = Array.prototype.slice.call(arguments, 0);
-                args.unshift(options.titleTemplate);
-                return l10n.getSync.apply(null, args);
-            };
-            this.graphOptions[options.fn] = options.options;
-        },
-        wrapTitleTemplate: function(key, wrapperFn) {
-            this.graphTitleTemplates[key] = wrapperFn(this.graphTitleTemplates[key]);
-        },
+        // **initialize**
         initialize: function() {
             this.App = Backbone.Marionette.getOption(this, 'App');
             this.AppRouter = Backbone.Marionette.getOption(this, 'AppRouter');
@@ -342,9 +277,119 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
             this.readyDeferred = $.Deferred();
             this.readyPromise = this.readyDeferred.promise();
         },
+        // **isReady**
+        // Returns a promise which is only fulfilled when the entire widget
+        // has finished initializing.
         isReady: function() {
             return this.readyPromise;
         },
+        // **debouncedChangedGraph**
+        // Debounce wrapper for Changing the scale of the Graph.
+        debouncedChangedGraph: function($parent, url, opts) {
+            this.dygraphLoader($parent, url, opts);
+        },
+        // **changeGraphRange**
+        // Handle slider events for the graph time scale.
+        changeGraphRange: function(evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            var $target = $(evt.target);
+            var $parent = $target.closest('.graph-card');
+            var $workarea = $parent.find('.workarea_g');
+            var url = $workarea.data('url');
+            var value = $target.val();
+            var opts = _.extend($workarea.data('opts'), {
+                xlabel: this.rangeLabel[value]
+            });
+            $parent.find('.graph-value').text(this.rangeText[value]);
+            var index = url.indexOf('&from');
+            if (index !== -1) {
+                url = url.slice(0, index);
+            }
+            this.debouncedChangedGraph($parent, url + '&from=' + this.rangeQuery[value], opts);
+        },
+        // **hostChangeHandler**
+        // Handle dropdown select change event. Change the route of the App
+        // to reflect changes to the host being viewed.
+        hostChangeHandler: function(evt) {
+            var target = evt.target;
+            var $el = $(target.options[target.selectedIndex]);
+            var host = $el.attr('value');
+            if (target.selectedIndex < 2 || this.currentGraph === '') {
+                this.currentGraph = '';
+            } else {
+                host += '/' + this.currentGraph;
+            }
+            this.AppRouter.navigate('graph/' + host, {
+                trigger: true
+            });
+        },
+        // **clickHandler**
+        // Handle buttons above graphs to change to different host graphs.
+        // Updates the route for the correct subview.
+        clickHandler: function(evt) {
+            var $target = $(evt.target);
+            var id = $target.attr('data-id');
+            var route = 'graph/' + this.hostname + '/' + id;
+            this.currentGraph = id;
+            if (id === 'overview') {
+                route = 'graph/' + this.hostname;
+                this.currentGraph = '';
+            }
+            this.AppRouter.navigate(route, {
+                trigger: true
+            });
+        },
+        // **onItemBeforeClose**
+        // Clean up view when closed.
+        // Remove cached graph instances and state.
+        onItemBeforeClose: function() {
+            this.$('.workarea_g').each(function(index, graph) {
+                /* clean up cached dygraph instances before closing view */
+                var $graph = $(graph);
+                var dynagraph = $graph.data('graph');
+                // jshint camelcase: false
+                if (dynagraph && dynagraph.maindiv_ !== null) {
+                    dynagraph.destroy();
+                }
+                $graph.data('graph', undefined);
+                $graph.data('url', undefined);
+                $graph.data('opts', undefined);
+            });
+        },
+        // **poolIopsGraphTitleTemplate**
+        poolIopsGraphTitleTemplate: function(fn) {
+            // wrap Pool Iops Title Template so we can add proper name
+            var self = this;
+            return function(opts) {
+                var pools = self.App.ReqRes.request('get:pools');
+                pools.all = 'Aggregate';
+                if (opts.id) {
+                    opts.id = pools[opts.id];
+                }
+                return fn(opts);
+            };
+        },
+        // **makeGraphFunctions**
+        makeGraphFunctions: function(options) {
+            var targets = gutils.makeTargets(gutils[options.util](options.metrics));
+            var fns = [
+                gutils.makeParam('format', 'json-array'),
+                targets
+            ];
+            this[options.fn] = gutils.makeGraphURL(this.baseUrl, fns);
+            this.graphTitleTemplates[options.fn] = function() {
+                var args = Array.prototype.slice.call(arguments, 0);
+                args.unshift(options.titleTemplate);
+                return l10n.getSync.apply(null, args);
+            };
+            this.graphOptions[options.fn] = options.options;
+        },
+        // **wrapTitleTemplate**
+        wrapTitleTemplate: function(key, wrapperFn) {
+            this.graphTitleTemplates[key] = wrapperFn(this.graphTitleTemplates[key]);
+        },
+        // **clusterUpdate**
         clusterUpdate: function(model) {
             // re-init models that depend on cluster name issue #7140
             this.iopsTargetModels = new models.GraphitePoolIOPSModel(undefined, {
@@ -352,6 +397,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 clusterName: model.get('id')
             });
         },
+        // **renderWrapper**
         // Wrap render so we can augment it with ui elements and
         // redelegate events on new ui elements
         renderWrapper: function(fn) {
@@ -361,6 +407,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
             this.delegateEvents(this.events);
             this.readyDeferred.resolve();
         },
+        // **renderGraphTemplates**
         renderGraphTemplates: function() {
             var self = this;
             this.selectors = _.map(_.range(30), function(id) {
@@ -372,29 +419,36 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 return '.' + selector;
             });
         },
+        // **makeCPUDetail**
         makeCPUDetail: function(hostname, id) {
             this.updateBtns(id);
             return this.makePerHostModelGraphs(hostname, 'makeCPUDetailGraphUrl', this.cpuTargetModels);
         },
+        // **makeHostDeviceIOPS**
         makeHostDeviceIOPS: function(hostname, id) {
             this.updateBtns(id);
             return this.makePerHostModelGraphs(hostname, 'makeHostDeviceIOPSGraphUrl', this.ioTargetModels);
         },
+        // **makeHostDeviceRWBytes**
         makeHostDeviceRWBytes: function(hostname, id) {
             this.updateBtns(id);
             return this.makePerHostModelGraphs(hostname, 'makeHostDeviceRWBytesGraphUrl', this.ioTargetModels);
         },
+        // **makeHostDeviceRWAwait**
         makeHostDeviceRWAwait: function(hostname, id) {
             this.updateBtns(id);
             return this.makePerHostModelGraphs(hostname, 'makeHostDeviceRWAwaitGraphUrl', this.ioTargetModels);
         },
+        // **makePoolIOPS**
         makePoolIOPS: function() {
             return this.makePerHostModelGraphs('', 'makePoolIOPSGraphURL', this.iopsTargetModels, this.iopsTargetModels.clusterName);
         },
+        // **updateBtns**
         updateBtns: function(id) {
             this.ui.buttons.find('.btn').removeClass('active');
             this.ui.buttons.find('[data-id="' + id + '"]').addClass('active');
         },
+        // **getOSDIDs**
         getOSDIDs: function() {
             // create a fake model that mimics the interfaces we need
             var reqres = this.App.ReqRes;
@@ -414,18 +468,22 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
             model.clear = function() {};
             return model;
         },
+        // **makeHostDeviceDiskSpaceBytes**
         makeHostDeviceDiskSpaceBytes: function(hostname, id) {
             this.updateBtns(id);
             return this.makePerHostModelGraphs(hostname, 'makeDiskSpaceBytesGraphUrl', this.getOSDIDs());
         },
+        // **makeHostDeviceDiskSpaceInodes**
         makeHostDeviceDiskSpaceInodes: function(hostname, id) {
             this.updateBtns(id);
             return this.makePerHostModelGraphs(hostname, 'makeDiskSpaceInodesGraphUrl', this.getOSDIDs());
         },
+        // **makeHostNetworkBytesMetrics**
         makeHostNetworkBytesMetrics: function(hostname, id) {
             this.updateBtns(id);
             return this.makePerHostModelGraphs(hostname, 'makeHostNetworkTXRXBytesGraphURL', this.netTargetModels);
         },
+        // **makeHostNetworkPacketsMetrics**
         makeHostNetworkPacketsMetrics: function(hostname, id) {
             this.updateBtns(id);
             var self = this;
@@ -436,6 +494,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 return a.concat(b).concat(c);
             });
         },
+        // **makeClusterWideMetrics**
         makeClusterWideMetrics: function() {
             var self = this;
             var model = {
@@ -458,12 +517,15 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 return a.concat(b);
             });
         },
+        // **showButtons**
         showButtons: function() {
             this.ui.buttons.css('visibility', 'visible');
         },
+        // **hideButtons**
         hideButtons: function() {
             this.ui.buttons.css('visibility', 'hidden');
         },
+        // **makePerHostGraphs**
         makePerHostGraphs: function(hostname, fnName) {
             var fn = this[fnName];
             var titleFn = this.graphTitleTemplates[fnName];
@@ -480,6 +542,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 options: options
             };
         },
+        // **makePerHostModelGraphs**
         makePerHostModelGraphs: function(hostname, fnName, model, clusterName) {
             var self = this;
             var titleFn = this.graphTitleTemplates[fnName];
@@ -511,6 +574,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
             });
             return deferred.promise();
         },
+        // **makeHostUrls**
         makeHostUrls: function(fnName) {
             var self = this;
             return function() {
@@ -520,10 +584,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 });
             };
         },
-        selectTemplate: _.template('<select class="form-control" name="hosts"><option value="all" selected><%- Cluster %></option><option value="iops"><%- PoolIOPS %></option><%= list %></select>'),
-        optionTemplate: _.template('<option value="<%- args.host %>">Host - <%- args.host %></option>"', null, {
-            variable: 'args'
-        }),
+        // **renderHostSelector**
         renderHostSelector: function() {
             var hosts = this.App.ReqRes.request('get:fqdns');
             var opts = _.reduce(hosts, function(memo, host) {
@@ -538,32 +599,14 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 list: opts
             }));
         },
-        selectors: [],
-        dygraphDefaultOptions: {
-            labelsKMG2: false,
-            labelsKMB: false,
-            stackedGraph: false,
-            fillGraph: false,
-            stepPlot: false,
-            xlabel: 'Time (Last 24 hours)',
-            connectSeparatedPoints: true,
-            colors: ['#8fc97f', '#beaed4', '#fdc086', '#386cb0', '#f0027f', '#bf5b17', '#666666'],
-            labelsSeparateLines: true,
-            legend: 'always',
-            axes: {
-                x: {
-                    valueFormatter: function(ms) {
-                        return new Date(ms).strftime('%Y-%m-%d @ %H:%M%Z');
-                    }
-                }
-            }
-        },
+        // **jsonRequest**
         jsonRequest: function(url) {
             return $.ajax({
                 url: url,
                 dataType: 'json'
             });
         },
+        // **useCustomLabels**
         useCustomLabels: function(post, overrides) {
             if (overrides && overrides.labels) {
                 // override labels from response if we have custom ones defined
@@ -577,6 +620,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
             }
             return post.labels;
         },
+        // **allocateGraph**
         allocateGraph: function($el, data, options) {
             var $g = $el.data('graph');
             if ($g) {
@@ -594,6 +638,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
             }
             return $g;
         },
+        // **renderGraph**
         renderGraph: function($el, url, overrides, resp) {
             var $workarea = $el.find('.workarea_g');
             $workarea.css('visibility', 'hidden');
@@ -625,6 +670,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 });
             });
         },
+        // **dygraphLoader**
         dygraphLoader: function($el, url, optOverrides) {
             var self = this;
             var $graphveil = $el.find('.graph-spinner').removeClass('hidden');
@@ -654,6 +700,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 $graphveil.addClass('hidden');
             });
         },
+        // **makeHostOverviewGraphUrl**
         makeHostOverviewGraphUrl: function(host) {
             var self = this;
             return function() {
@@ -662,6 +709,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 });
             };
         },
+        // **hideGraphs**
         hideGraphs: function() {
             this.$('.graph-card, .workarea_g').css('visibility', 'hidden');
             this.$('.graph-range input').each(function(index, el) {
@@ -672,6 +720,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 $(el).text(self.rangeText[2]);
             });
         },
+        // **renderGraphs**
         renderGraphs: function(title, fn) {
             var graphs = fn.call(this);
             var self = this;
@@ -687,6 +736,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', 'helpers/graph-utils', 
                 }, self.graphiteRequestDelayMs * index);
             });
         },
+        // **updateSelect**
         updateSelect: function(id) {
             this.$('select option[selected]').prop('selected', false);
             this.$('select option[value="' + id + '"]').prop('selected', true);
